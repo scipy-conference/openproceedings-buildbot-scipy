@@ -8,8 +8,8 @@ ls images/
 make html
 if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     if [ "$TRAVIS" == "true" ]; then
-        git config --global user.email "travis@travis-ci.org"
-        git config --global user.name "Travis"
+        git config --global user.email "scipy-proceedings-bot@andreazonca.com"
+        git config --global user.name "scipy-proceedings-bot"
     fi
     # commit json information to the repository
     cd content
