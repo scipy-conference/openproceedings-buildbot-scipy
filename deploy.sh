@@ -28,6 +28,6 @@ cd built_website/$TARGET_FOLDER
 rsync -rv --exclude=.git  $TRAVIS_BUILD_DIR/../buildbot/$PELICAN_OUTPUT_FOLDER/* .
 #add, commit and push files
 git add -f .
-git commit -m $COMMIT_MESSAGE
+git commit -m "$COMMIT_MESSAGE"
 git push -fq origin $BRANCH &> /dev/null
 echo -e "Deploy completed\n"
