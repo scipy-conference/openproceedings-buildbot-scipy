@@ -9,13 +9,11 @@ TARGET_REPO=$GITHUB_ORGANIZATION/$GITHUB_ORGANIZATION.github.io
 TARGET_FOLDER=$1
 PELICAN_OUTPUT_FOLDER=output
 
-if [ "$TRAVIS" == "true" ]; then
-    git config --global user.email "scipy-proceedings-bot@andreazonca.com"
-    git config --global user.name "scipy-proceedings-bot"
-fi
 echo -e "Starting to deploy to Github Pages\n"
 COMMIT_MESSAGE="Travis build $TRAVIS_BUILD_NUMBER"
 if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    git config --global user.email "scipy-proceedings-bot@andreazonca.com"
+    git config --global user.name "scipy-proceedings-bot"
     #using token clone gh-pages branch
     git clone --quiet --branch=$BRANCH https://${GH_TOKEN}@github.com/$TARGET_REPO.git built_website &> /dev/null
     #go into directory and copy data we're interested in to that directory
@@ -23,6 +21,8 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     cd built_website/$TARGET_FOLDER
     rsync -rv --exclude=.git  $TRAVIS_BUILD_DIR/../buildbot/$PELICAN_OUTPUT_FOLDER/* .
 else
+    git config --global user.email "scipy-proceedings-bot-unsecure@andreazonca.com"
+    git config --global user.name "scipy-proceedings-bot-unsecure"
     cd $TRAVIS_BUILD_DIR
     # assumes each PR is about a single paper, and a single paper has only 1 rst or md file
     CHANGED_PAPER=`git diff-tree --no-commit-id --name-only -r HEAD | egrep 'rst|md'`
