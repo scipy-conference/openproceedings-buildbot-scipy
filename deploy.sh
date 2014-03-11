@@ -25,7 +25,7 @@ else
     git config --global user.name "scipy-proceedings-bot-unsecure"
     cd $TRAVIS_BUILD_DIR
     # assumes each PR is about a single paper, and a single paper has only 1 rst or md file
-    CHANGED_PAPER=`git diff-tree --no-commit-id --name-only -r HEAD | egrep 'rst|md'`
+    CHANGED_PAPER=`git diff --name-only $TRAVIS_COMMIT^1 $TRAVIS_COMMIT | egrep 'rst|md'`
     TARGET_REPO="$GITHUB_ORGANIZATION/proc_pdf_drafts_2014"
 
     git clone --quiet --branch=$BRANCH https://c935f10c2fff248013e6527d9e7fb29f7f628df8@github.com/$TARGET_REPO.git built_website 
@@ -36,6 +36,6 @@ fi
 
 #add, commit and push files
 git add -f .
-git commit -m "$COMMIT_MESSAGE" -m "Commit $TRAVIS_COMMIT"
+git commit -m "$COMMIT_MESSAGE" -m "Commit $TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
 git push -fq origin $BRANCH &> /dev/null
 echo -e "Deploy completed\n"
