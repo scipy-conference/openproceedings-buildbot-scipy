@@ -15,17 +15,24 @@ if [ "$TRAVIS" == "true" ]; then
 fi
 echo -e "Starting to deploy to Github Pages\n"
 COMMIT_MESSAGE="Travis build $TRAVIS_BUILD_NUMBER"
-if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    TARGET_FOLDER=$TARGET_FOLDER/submission/$TRAVIS_PULL_REQUEST
-    COMMIT_MESSAGE="$COMMIT_MESSAGE, pull request $TRAVIS_PULL_REQUEST"
+if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    #using token clone gh-pages branch
+    git clone --quiet --branch=$BRANCH https://${GH_TOKEN}@github.com/$TARGET_REPO.git built_website &> /dev/null
+    #go into directory and copy data we're interested in to that directory
+    mkdir -p built_website/$TARGET_FOLDER
+    cd built_website/$TARGET_FOLDER
+    rsync -rv --exclude=.git  $TRAVIS_BUILD_DIR/../buildbot/$PELICAN_OUTPUT_FOLDER/* .
+else
+    TARGET_REPO="$GITHUB_ORGANIZATION/proc_pdf_drafts_2014"
+    git clone --quiet --branch=$BRANCH https://c935f10c2fff248013e6527d9e7fb29f7f628df8@github.com/$TARGET_REPO.git built_website &> /dev/null
+    cd $TRAVIS_BUILD_DIR/../buildbot/content
+    # assumes each PR is about a single paper, and a single paper has only 1 rst or md file
+    CHANGED_PAPER=`git diff-tree --no-commit-id --name-only -r HEAD | egrep 'rst|md'`
+    cd $TRAVIS_BUILD_DIR/built_website/
+    cp $TRAVIS_BUILD_DIR/../buildbot/$PELICAN_OUTPUT_FOLDER/pdf/${CHANGED_PAPER%%.*}*pdf .
+    COMMIT_MESSAGE="$COMMIT_MESSAGE, pull request $TRAVIS_PULL_REQUEST, paper $CHANGED_PAPER"
 fi
 
-#using token clone gh-pages branch
-git clone --quiet --branch=$BRANCH https://${GH_TOKEN}@github.com/$TARGET_REPO.git built_website &> /dev/null
-#go into directory and copy data we're interested in to that directory
-mkdir -p built_website/$TARGET_FOLDER
-cd built_website/$TARGET_FOLDER
-rsync -rv --exclude=.git  $TRAVIS_BUILD_DIR/../buildbot/$PELICAN_OUTPUT_FOLDER/* .
 #add, commit and push files
 git add -f .
 git commit -m "$COMMIT_MESSAGE"
