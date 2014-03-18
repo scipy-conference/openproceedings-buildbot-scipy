@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+    {% include 'includes/intro.html' %}
     {% if articles %}
         {% for article in (articles_page.object_list if articles_page else articles) %}
             <article>
