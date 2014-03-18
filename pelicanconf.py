@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 import os
 
 AUTHOR = u'Andrea Zonca'
-SITENAME = u'OpenProceedings'
-SITEURL = ''
+SITENAME = u'Scipy 2014 proceedings'
+SITEURL = 'http://scipy-conference.github.io/proceedings/2014/'
 
 TIMEZONE = 'America/Los_Angeles'
 
