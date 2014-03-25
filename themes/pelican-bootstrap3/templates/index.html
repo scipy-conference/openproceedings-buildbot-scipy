@@ -4,10 +4,45 @@
     {% if articles %}
         {% for article in (articles_page.object_list if articles_page else articles) %}
             <article>
-                <h4><a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h4>
-                <div class="summary">{{ article.author }}
-                    {# Uncomment if you want to show comment counts #}
-                    {#{% include 'includes/comment_count.html' %}#}
+                <div class="entry-content">
+                    <h4><a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h4>
+                    <footer class="post-info">
+                        {% if article.author %}
+                        <span class="label label-default">By</span>
+                        <i class="icon-user"></i>{{ article.author }}
+                        {% endif %}
+
+                            <span class="label label-default">
+                                <a href="#" class="togglesummary">Abstract</a>
+                            </span>
+
+                        {% if PDF_PROCESSOR %}
+                            &nbsp;
+                            <span class="label label-default">
+                                <a href="{{ SITEURL }}/pdf/{{ article.slug }}.pdf">PDF</a>
+                            </span>
+                        {% endif %}
+
+                        {% if BIBTEX_PROCESSOR %}
+                            &nbsp;
+                            <span class="label label-default">
+                                <a href="{{ SITEURL }}/bib/{{ article.slug }}.bib">BibTex</a>
+                            </span>
+                        {% endif %}
+
+                        {% if article.doi %}
+                            &nbsp;
+                            <span class="label label-default">
+                                <a href="{{ article.doi }}">FigShare</a>
+                            </span>
+                        {% endif %}
+
+                    </footer><!-- /.post-info -->
+                    <div class="summary">
+                        {{ article.summary }}
+                        {# Uncomment if you want to show comment counts #}
+                        {#{% include 'includes/comment_count.html' %}#}
+                    </div>
                 </div>
             </article>
             <hr/>
@@ -36,3 +71,17 @@
         </ul>
     {% endif %}
 {% endblock content %}
+
+{% block extrajs %}
+
+<script>
+$('.togglesummary').on('click', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var $collapse = $this.closest('article').find('.summary');
+    $collapse.collapse('toggle');
+});
+$('.summary').collapse('hide');
+</script>
+
+{% endblock %}
